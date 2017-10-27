@@ -10,12 +10,14 @@ public class Suche {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        String words = br.readLine();
+        //String words = br.readLine();
 
-        String[] wordArr = words.split(" |\\.");
-        int[] numbers = excludeText(wordArr);
+
+        //String[] wordArr = words.split(" |\\.");
+        //int[] numbers = excludeText(wordArr);
+        int[] numbers = new int[]{8,6,4,2, 7, 5,3};
         System.out.println(Arrays.toString(numbers));
-        selectElementBySize(1,numbers);
+        bw.write(Integer.toString(selectElementBySize(2,numbers)));
         br.close();
         bw.close();
     }
@@ -42,27 +44,41 @@ public class Suche {
     }
 
     private static int recSelect(int lo, int up, int k, int[] numbers) {
-        int pivot = numbers[lo];
-        int i = lo + 1;
-        int j = up;
+        int pivot = numbers[up];
+        int i = lo;
+        int j = up -1;
         while(i < j) {
-            System.out.println(numbers[i]);
+
             while(numbers[i] < pivot) {
                 i++;
             }
-            while(numbers[j] > pivot) {
+            while(numbers[j] >= pivot && i < j) {
                 j--;
             }
-            swapElements(i,j,numbers);
+            System.out.println(numbers[i] + " " + numbers[j]);
+            if(i<j) {
+                swapElements(i, j, numbers);
+                System.out.println(Arrays.toString(numbers));
+            }
         }
-        numbers[i] = pivot;
+        swapElements(up,i,numbers);
         System.out.println(Arrays.toString(numbers));
-        return 1;
+        if(i == k) {
+            return numbers[i];
+        }
+        if(i > k) {
+            return recSelect(lo, i-1, k, numbers);
+
+        }
+        if(i < k) {
+            return recSelect(i+1,up,k - i,numbers);
+        }
+        return -1;
     }
 
     private static void swapElements(int index1, int index2, int[] arr) {
         int temp = arr[index1];
         arr[index1] = arr[index2];
-        arr[index2] = arr[temp];
+        arr[index2] = temp;
     }
 }
