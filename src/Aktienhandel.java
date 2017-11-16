@@ -1,13 +1,21 @@
 import java.util.Arrays;
+import java.util.Scanner;
 
 class Aktienhandel {
     public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
         Heap heap = new Heap(5);
         heap.insert(4);
         heap.insert(2);
         heap.insert(8);
         heap.insert(7);
         System.out.println(heap);
+        System.out.println(heap.removeBiggest());
+        System.out.println(heap);
+    }
+
+    private static int readInt() {
+
     }
 
 
@@ -35,6 +43,36 @@ class Heap {
             i /= 2;
         }
         usedSize++;
+    }
+
+    public int removeBiggest() {
+        int out = heap[0];
+        heap[0] = heap[usedSize - 1];
+        usedSize--;
+        heapify(0, usedSize - 1);
+        return out;
+    }
+
+    private void heapify(int lo, int hi) {
+        lo++; hi++;
+
+        int k = 2 * lo;
+        if(k > hi) {
+            return;
+        }
+        if(k + 1 > hi) {
+            if(heap[k - 1] > heap[lo - 1]) {
+                switchElements(lo - 1,k - 1);
+                return;
+            }
+        }
+        if(heap[k - 1] < heap[k]) {
+            k++;
+        }
+        if(heap[lo - 1] < heap[k - 1]) {
+            switchElements(lo - 1, k - 1);
+            heapify(k - 1,hi - 1);
+        }
     }
 
     private void switchElements(int index1, int index2) {
