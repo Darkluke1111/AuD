@@ -1,21 +1,56 @@
+import java.io.*;
 import java.util.Arrays;
-import java.util.Scanner;
 
 class Aktienhandel {
     public static void main(String[] args) {
-        Scanner s = new Scanner(System.in);
-        Heap heap = new Heap(5);
-        heap.insert(4);
-        heap.insert(2);
-        heap.insert(8);
-        heap.insert(7);
-        System.out.println(heap);
-        System.out.println(heap.removeBiggest());
-        System.out.println(heap);
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); PrintWriter pw = new PrintWriter(new OutputStreamWriter(System.out), true)) {
+            int length = readInt(br);
+            int[] numbers = readIntArray(br);
+
+            //int length = 1000;
+            //int[] numbers = getRandomArray(length);
+            //System.out.println(Arrays.toString(numbers));
+
+            Heap buy = new Heap(length);
+            Heap sell = new Heap(length);
+
+            for(int i = 0 ; i < length ; i++) {
+                if(numbers[i] < 0) {
+                    sell.insert(numbers[i]);
+                } else {
+                    buy.insert(numbers[i]);
+                }
+                //System.out.println(buy + " " + sell);
+                if(buy.getUsedSize() > 0 && sell.getUsedSize() > 0 && buy.getBiggest() >= -sell.getBiggest()) {
+                    //System.out.print("Remove: " + buy.getBiggest() + " : " + sell.getBiggest());
+                    buy.removeBiggest();
+                    sell.removeBiggest();
+                    pw.write("Handel in Schritt " + (i+1) + "\r\n");
+                    //System.out.println(" -> " + buy + " " +  sell);
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static int readInt() {
+    private static int readInt(BufferedReader br) throws IOException {
+        return Integer.parseInt(br.readLine());
+    }
 
+    private static int[] readIntArray(BufferedReader br) throws IOException {
+        return Arrays.stream(br.readLine().split(" ")).mapToInt(str -> Integer.parseInt(str)).toArray();
+    }
+
+    private static int[] getRandomArray(int length) {
+        int[] arr = new int[length];
+        for(int i = 0 ; i < length ; i++) {
+            while(arr[i] == 0) {
+                arr[i] = (int) (Math.random() * 100) - 50;
+            }
+        }
+        return arr;
     }
 
 
@@ -38,16 +73,25 @@ class Heap {
 
         int i = usedSize;
         heap[i] = number;
-        while(i > 0 && heap[i] > heap[i/2]) {
-            switchElements(i,i/2);
-            i /= 2;
+        while(i > 0 && heap[i] > heap[(i + 1)/2 - 1]) {
+            switchElements(i,(i + 1)/2 - 1);
+            i = (i+1)/2 - 1;
         }
         usedSize++;
+    }
+
+    public int getUsedSize() {
+        return usedSize;
+    }
+
+    public int getBiggest() {
+        return heap[0];
     }
 
     public int removeBiggest() {
         int out = heap[0];
         heap[0] = heap[usedSize - 1];
+        heap[usedSize -1] = 0;
         usedSize--;
         heapify(0, usedSize - 1);
         return out;
