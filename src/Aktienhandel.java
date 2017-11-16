@@ -65,6 +65,14 @@ class Heap {
         usedSize = 0;
     }
 
+    public int getElementAtPos(int i) {
+        return heap[i - 1];
+    }
+
+    public void setElementAtPos(int i, int value) {
+        heap[i - 1] = value;
+    }
+
     public void insert(int number) {
         //Throw an exception if the maximum size is surpassed by the insert operation
         if(usedSize == heap.length) {
@@ -73,11 +81,12 @@ class Heap {
 
         int i = usedSize;
         heap[i] = number;
+        usedSize++;
         while(i > 0 && heap[i] > heap[(i + 1)/2 - 1]) {
             switchElements(i,(i + 1)/2 - 1);
             i = (i+1)/2 - 1;
         }
-        usedSize++;
+
     }
 
     public int getUsedSize() {
