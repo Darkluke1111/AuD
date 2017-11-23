@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 class DatenbankHack2 {
@@ -42,9 +43,19 @@ class HashTable<T> {
         return hashTable[pos];
     }
 
+    @Override
+    public String toString() {
+        return Arrays.deepToString(hashTable);
+    }
+
     @FunctionalInterface
     interface HashFunction<T> {
         int hash(int tableSize, T value, int collisions);
+    }
+
+    public int linearScanHashFunction(int tableSize, T value, int collisions) {
+        int hashCode = value.hashCode();
+        return
     }
 }
 
