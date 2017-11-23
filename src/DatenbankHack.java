@@ -2,18 +2,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 class DatenbankHack {
   public static void main(String args[]) {
     try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
       int concernNumber = readInt(br);
-
       for(int k = 0 ; k < concernNumber ; k++) {
         ConcernData concernData = readConcernData(br);
-        int[] normalHash = new int[concernData.tableSize];
-        normalHash = Arrays.stream(normalHash).map(i -> -1).toArray();
-        int[] doubleHash = new int[concernData.tableSize];
-        doubleHash = Arrays.stream(doubleHash).map(i -> -1).toArray();
+
+        int[] normalHash = IntStream.generate(() -> -1).limit(concernData.keyNumber).toArray();
+        int[] doubleHash = IntStream.generate(() -> -1).limit(concernData.keyNumber).toArray();
+
         for(int key : concernData.keys) {
 
           //normal Hashing
