@@ -3,30 +3,45 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-public class DatenbankHack {
+class DatenbankHack {
   public static void main(String args[]) {
     try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
       int concernNumber = readInt(br);
 
       for(int k = 0 ; k < concernNumber ; k++) {
         ConcernData concernData = readConcernData(br);
-        boolean[] normalHash = new boolean[concernData.tableSize];
-        boolean[] doubleHash = new boolean[concernData.tableSize];
+        int[] normalHash = new int[concernData.tableSize];
+        normalHash = Arrays.stream(normalHash).map(i -> -1).toArray();
+        int[] doubleHash = new int[concernData.tableSize];
+        doubleHash = Arrays.stream(doubleHash).map(i -> -1).toArray();
         for(int key : concernData.keys) {
 
           //normal Hashing
           {
             int i = 0;
-            for (; normalHash[normalHash(concernData.tableSize, i, key)]; i++) ;
-            normalHash[normalHash(concernData.tableSize, i, key)] = true;
+            for (; normalHash[normalHash(concernData.tableSize, i, key)] != -1; i++) ;
+            normalHash[normalHash(concernData.tableSize, i, key)] = key;
           }
+
 
           //double Hashing
           {
             int i = 0;
-            for (; doubleHash[doubleHash(concernData.tableSize, i, key)]; i++) ;
-            doubleHash[doubleHash(concernData.tableSize, i, key)] = true;
+            for (; doubleHash[doubleHash(concernData.tableSize, i, key)] != -1; i++) ;
+            doubleHash[doubleHash(concernData.tableSize, i, key)] = key;
           }
+        }
+
+        {
+          int i = 0;
+          for (; normalHash[normalHash(concernData.tableSize, i, concernData.bossKey)] != concernData.bossKey; i++);
+          System.out.println(normalHash(concernData.tableSize, i, concernData.bossKey));
+        }
+
+        {
+          int i = 0;
+          for (; doubleHash[doubleHash(concernData.tableSize, i, concernData.bossKey)] !=  concernData.bossKey; i++) ;
+          System.out.println(doubleHash(concernData.tableSize, i, concernData.bossKey));
         }
       }
 
@@ -38,19 +53,26 @@ public class DatenbankHack {
 
   private static ConcernData readConcernData(BufferedReader br) throws IOException {
     ConcernData concernData = new ConcernData();
-    concernData.tableSize = readInt(br);
-    concernData.keys = readIntArray(br);
-    concernData.bossKey = readInt(br);
+    int[] tmp = readIntArray(br);
+    concernData.tableSize = tmp[0];
+    concernData.keyNumber = tmp[1];
+    concernData.keys = new int[concernData.keyNumber];
+    concernData.bossKey = tmp[2];
+    for(int i = 0 ; i < concernData.keyNumber ; i++) {
+      concernData.keys[i] = readInt(br);
+    }
+
+
     return concernData;
 
   }
 
   private static int normalHash(int tablesize, int i, int key) {
-    return (key + i)% tablesize;
+    return ((key + i)% tablesize);
   }
 
   private static int doubleHash(int tablesize, int i, int key) {
-    return (key + i * (1 + (key % (tablesize-1))) % tablesize);
+    return ((key + i * (1 + (key % (tablesize-1)))) % tablesize);
   }
 
   private static int readInt(BufferedReader br) throws IOException {
@@ -75,5 +97,6 @@ public class DatenbankHack {
     int tableSize;
     int[] keys;
     int bossKey;
+    int keyNumber;
   }
 }
