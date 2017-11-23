@@ -8,9 +8,26 @@ public class DatenbankHack {
     try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
       int concernNumber = readInt(br);
 
-      for(int i = 0 ; i < concernNumber ; i++) {
+      for(int k = 0 ; k < concernNumber ; k++) {
         ConcernData concernData = readConcernData(br);
+        boolean[] normalHash = new boolean[concernData.tableSize];
+        boolean[] doubleHash = new boolean[concernData.tableSize];
+        for(int key : concernData.keys) {
 
+          //normal Hashing
+          {
+            int i = 0;
+            for (; normalHash[normalHash(concernData.tableSize, i, key)]; i++) ;
+            normalHash[normalHash(concernData.tableSize, i, key)] = true;
+          }
+
+          //double Hashing
+          {
+            int i = 0;
+            for (; doubleHash[doubleHash(concernData.tableSize, i, key)]; i++) ;
+            doubleHash[doubleHash(concernData.tableSize, i, key)] = true;
+          }
+        }
       }
 
     } catch (IOException e) {
@@ -28,7 +45,11 @@ public class DatenbankHack {
 
   }
 
-  private static int hash(int tablesize, int i, int key) {
+  private static int normalHash(int tablesize, int i, int key) {
+    return (key + i)% tablesize;
+  }
+
+  private static int doubleHash(int tablesize, int i, int key) {
     return (key + i * (1 + (key % (tablesize-1))) % tablesize);
   }
 
